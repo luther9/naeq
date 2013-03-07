@@ -79,5 +79,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("%d: %v\n", value, primeFactors)
+	fmt.Printf("%d %v\n", value, primeFactors)
 }
