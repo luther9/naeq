@@ -1,0 +1,3 @@
+Interpret sequences of digits as integers.
+Interactive mode.
+-f: Takes a file and outputs a dictionary.
