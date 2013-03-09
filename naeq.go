@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -42,13 +44,23 @@ func (self primeTester) prime(n int) bool {
 
 func main() {
 	// Convert the arguments to a single string
-	phrase := strings.ToLower(strings.Join(os.Args[1:], ""))
+	phrase := strings.ToLower(strings.Join(os.Args[1:], " "))
 
 	value := 0
+	// Count each rune
 	for _, c := range phrase {
 		if unicode.IsLower(c) {
 			value += int(c-'a')*19%26 + 1
 		}
+	}
+	// Add in the numbers
+	nSlice := regexp.MustCompile(`\d+`).FindAllString(phrase, -1)
+	for _, s := range nSlice {
+		n, err := strconv.Atoi(s)
+		if err != nil {
+			panic(fmt.Errorf("The regex caught a non-number: %s", s))
+		}
+		value += n
 	}
 
 	primeFactors := []int{}
