@@ -15,35 +15,36 @@ func sqrt(n int) int {
 	return int(math.Sqrt(float64(n))) + 1
 }
 
-// The constructor and method of this type are meant to encapsulate the off-by-2
-// issue.
+// An object that can test if certain numbers are prime. The methods of this
+// type are meant to encapsulate the index, which is internally off by 2.
 type primeTester []bool
 
-// Returns a primeTester that can test the primality of numbers in the interval
-// [2:length].
-func newPrimeTester(length int) primeTester {
-	pt := make(primeTester, length-2)
-	for i := range pt {
-		pt[i] = true
+// Sets the maximum number (exclusive) that can be tested for primality.
+func (self *primeTester) setMax(max int) {
+	// Set all the new numbers to true
+	oldMax := len(*self) + 2
+	for i := oldMax; i < max; i++ {
+		*self = append(*self, true)
 	}
-	for i := 2; i < sqrt(length); i++ {
-		if pt.prime(i) {
-			for j := i * i; j < length; j += i {
-				pt[j-2] = false
+
+	for i := 2; i < sqrt(max); i++ {
+		if self.prime(i) {
+			// i is a known prime. Make all its multiples false.
+			for j := i * i; j < max; j += i {
+				(*self)[j-2] = false
 			}
 		}
 	}
-	return pt
 }
 
-// Returns true iff n is prime. n must be within the range set by
-// newPrimeTester.
+// Returns true iff n is prime. n must be less than the number set by setMax.
 func (self primeTester) prime(n int) bool {
 	return self[n-2]
 }
 
 func main() {
-	// Convert the arguments to a single string
+	// Convert the arguments to a single string. Use a " " seperator to ensure
+	// numbers don't run together.
 	phrase := strings.ToLower(strings.Join(os.Args[1:], " "))
 
 	value := 0
@@ -67,10 +68,11 @@ func main() {
 	if value > 1 {
 		// Get list of primes
 		maxPrime := sqrt(value)
-		possiblePrimes := newPrimeTester(maxPrime)
+		pt := &primeTester{}
+		pt.setMax(maxPrime)
 		primes := []int{}
 		for i := 2; i < maxPrime; i++ {
-			if possiblePrimes.prime(i) {
+			if pt.prime(i) {
 				primes = append(primes, i)
 			}
 		}
