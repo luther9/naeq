@@ -10,27 +10,27 @@ import (
 	"unicode"
 )
 
-// Returns the square root of n. We add one to the return value to be safe.
+// Returns the square root of n.
 func sqrt(n int) int {
-	return int(math.Sqrt(float64(n))) + 1
+	return int(math.Sqrt(float64(n)))
 }
 
 // An object that can test if certain numbers are prime. The methods of this
 // type are meant to encapsulate the index, which is internally off by 2.
 type primeTester []bool
 
-// Sets the maximum number (exclusive) that can be tested for primality.
+// Sets the maximum number that can be tested for primality.
 func (self *primeTester) setMax(max int) {
 	// Set all the new numbers to true
 	oldMax := len(*self) + 2
-	for i := oldMax; i < max; i++ {
+	for i := oldMax; i <= max; i++ {
 		*self = append(*self, true)
 	}
 
-	for i := 2; i < sqrt(max); i++ {
+	for i := 2; i <= sqrt(max); i++ {
 		if self.prime(i) {
 			// i is a known prime. Make all its multiples false.
-			for j := i * i; j < max; j += i {
+			for j := i * i; j <= max; j += i {
 				(*self)[j-2] = false
 			}
 		}
@@ -71,7 +71,7 @@ func main() {
 		pt := &primeTester{}
 		pt.setMax(maxPrime)
 		primes := []int{}
-		for i := 2; i < maxPrime; i++ {
+		for i := 2; i <= maxPrime; i++ {
 			if pt.prime(i) {
 				primes = append(primes, i)
 			}
