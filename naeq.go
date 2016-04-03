@@ -24,12 +24,11 @@ type primeList struct {
 
 // Sets the maximum possible prime number.
 func (pl *primeList) setMax(max int) {
-	if max >= pl.max {
-		max++
+	if max > pl.max {
 		// Set all the new numbers to true
-		oldMax := pl.max
+		oldMax := pl.max + 1
 		pl.max = max
-		for i := oldMax; i < max; i++ {
+		for i := oldMax; i <= max; i++ {
 			pl.sieve[i] = true
 		}
 
@@ -76,7 +75,7 @@ func main() {
 	if value > 1 {
 		// Get list of primes
 		maxPrime := sqrt(value)
-		primes := &primeList{max: 2, sieve: map[int]bool{}}
+		primes := &primeList{max: 1, sieve: map[int]bool{}}
 		primes.setMax(maxPrime)
 
 		// Factor the value
