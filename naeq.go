@@ -49,11 +49,9 @@ func (pl *primeList) setMax(max int) {
 	}
 }
 
-func main() {
-	// Convert the arguments to a single string. Use a " " seperator to ensure
-	// numbers don't run together.
-	phrase := strings.ToLower(strings.Join(os.Args[1:], " "))
-
+// Returns the numerical value of phrase.
+func getValue(phrase string) int {
+	phrase = strings.ToLower(phrase)
 	value := 0
 	// Count each rune
 	for _, c := range phrase {
@@ -70,6 +68,13 @@ func main() {
 		}
 		value += n
 	}
+	return value
+}
+
+func main() {
+	// Convert the arguments to a single string. Use a " " seperator to ensure
+	// numbers don't run together.
+	value := getValue(strings.Join(os.Args[1:], " "))
 
 	primeFactors := []int{}
 	if value > 1 {
