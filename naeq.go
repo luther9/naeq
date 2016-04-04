@@ -22,6 +22,10 @@ type primeList struct {
 	list  []int
 }
 
+func newPrimeList() *primeList {
+	return &primeList{max: 1, sieve: map[int]bool{}}
+}
+
 // Sets the maximum possible prime number.
 func (pl *primeList) setMax(max int) {
 	if max > pl.max {
@@ -98,7 +102,7 @@ func outputValue(phrase string, primes *primeList) {
 }
 
 func main() {
-	primes := &primeList{max: 1, sieve: map[int]bool{}}
+	primes := newPrimeList()
 	// Convert the arguments to a single string. Use a " " seperator to ensure
 	// numbers don't run together.
 	outputValue(strings.Join(os.Args[1:], " "), primes)
