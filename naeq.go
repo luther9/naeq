@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/bobappleyard/readline"
 )
 
 // Returns the square root of n.
@@ -103,7 +105,21 @@ func outputValue(phrase string, primes *primeList) {
 
 func main() {
 	primes := newPrimeList()
-	// Convert the arguments to a single string. Use a " " seperator to ensure
-	// numbers don't run together.
-	outputValue(strings.Join(os.Args[1:], " "), primes)
+	if len(os.Args) > 1 {
+		// Convert the arguments to a single string. Use a " " seperator to ensure
+		// numbers don't run together.
+		outputValue(strings.Join(os.Args[1:], " "), primes)
+	} else {
+		for {
+			phrase, err := readline.String("> ")
+			if err != nil {
+				break
+			}
+			outputValue(phrase, primes)
+			if phrase != "" {
+				readline.AddHistory(phrase)
+			}
+		}
+		fmt.Println()
+	}
 }
