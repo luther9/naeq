@@ -71,17 +71,12 @@ func getValue(phrase string) int {
 	return value
 }
 
-func main() {
-	// Convert the arguments to a single string. Use a " " seperator to ensure
-	// numbers don't run together.
-	value := getValue(strings.Join(os.Args[1:], " "))
-
+// Outputs the value of a string.
+func outputValue(phrase string, primes *primeList) {
+	value := getValue(phrase)
 	primeFactors := []int{}
 	if value > 1 {
-		// Get list of primes
-		maxPrime := sqrt(value)
-		primes := &primeList{max: 1, sieve: map[int]bool{}}
-		primes.setMax(maxPrime)
+		primes.setMax(sqrt(value))
 
 		// Factor the value
 		n := value
@@ -100,4 +95,11 @@ func main() {
 	}
 
 	fmt.Printf("%d %v\n", value, primeFactors)
+}
+
+func main() {
+	primes := &primeList{max: 1, sieve: map[int]bool{}}
+	// Convert the arguments to a single string. Use a " " seperator to ensure
+	// numbers don't run together.
+	outputValue(strings.Join(os.Args[1:], " "), primes)
 }
