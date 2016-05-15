@@ -127,8 +127,10 @@ func main() {
 		}
 		text = text[:n]
 		words := regexp.MustCompile(`[\w'\-]+`).FindAll(text, -1)
-		for _, w := range words {
-			outputValue(string(w), primes)
+		for _, word := range words {
+			w := string(word)
+			outputValue(w, primes)
+			fmt.Println(w)
 		}
 	} else if len(os.Args) > 1 {
 		// Convert the arguments to a single string. Use a " " seperator to ensure
