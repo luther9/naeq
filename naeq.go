@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math"
 	"os"
@@ -105,7 +106,31 @@ func outputValue(phrase string, primes *primeList) {
 
 func main() {
 	primes := newPrimeList()
-	if len(os.Args) > 1 {
+
+	fileName := flag.String("f", "", "Output the values of all words found in the specified file.")
+	flag.Parse()
+
+	if *fileName != "" {
+		file, err := os.Open(*fileName)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		text := make([]byte, 1000000000)
+		n, err := file.Read(text)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if n == len(text) {
+			fmt.Fprintf(os.Stderr, "Warning: Can only read first %d bytes of file.", len(text))
+		}
+		text = text[:n]
+		words := regexp.MustCompile(`[\w'\-]+`).FindAll(text, -1)
+		for _, w := range words {
+			outputValue(string(w), primes)
+		}
+	} else if len(os.Args) > 1 {
 		// Convert the arguments to a single string. Use a " " seperator to ensure
 		// numbers don't run together.
 		outputValue(strings.Join(os.Args[1:], " "), primes)
