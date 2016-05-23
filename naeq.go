@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -54,6 +55,11 @@ func (pl *primeList) setMax(max int) {
 			}
 		}
 	}
+}
+
+type valueEntry struct {
+	value int
+	words []string
 }
 
 // Returns the numerical value of phrase.
@@ -116,6 +122,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		// FIXME: Isn't there a better way to allocate memory for file reading?
 		text := make([]byte, 1000000000)
 		n, err := file.Read(text)
 		if err != nil {
@@ -127,10 +134,34 @@ func main() {
 		}
 		text = text[:n]
 		words := regexp.MustCompile(`[\w'\-]+`).FindAll(text, -1)
-		for _, word := range words {
-			w := string(word)
-			outputValue(w, primes)
-			fmt.Println(w)
+		data := []valueEntry{}
+		seenWords := map[string]bool{}
+		for _, wordSlice := range words {
+			word := string(wordSlice)
+			if !seenWords[word] {
+				seenWords[word] = true
+				value := getValue(word)
+				i := sort.Search(len(data), func(i int) bool {
+					return data[i].value >= value
+				})
+				if i == len(data) || value != data[i].value {
+					data = append(data, valueEntry{})
+					copy(data[i+1:], data[i:])
+					data[i] = valueEntry{value: value}
+				}
+				entry := &data[i]
+				i = sort.SearchStrings(entry.words, word)
+				entry.words = append(entry.words, "")
+				copy(entry.words[i+1:], entry.words[i:])
+				entry.words[i] = word
+			}
+		}
+		for _, entry := range data {
+			fmt.Println(entry.value)
+			for _, word := range entry.words {
+				fmt.Println(word)
+			}
+			fmt.Println()
 		}
 	} else if len(os.Args) > 1 {
 		// Convert the arguments to a single string. Use a " " seperator to ensure
