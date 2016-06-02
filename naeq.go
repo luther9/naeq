@@ -62,9 +62,9 @@ type valueEntry struct {
 	words []string
 }
 
-// Returns the numerical value of phrase.
+// Returns the numerical value of phrase. Phrase must not have any capital
+// letters.
 func getValue(phrase string) int {
-	phrase = strings.ToLower(phrase)
 	value := 0
 	// Count each rune
 	for _, c := range phrase {
@@ -84,9 +84,8 @@ func getValue(phrase string) int {
 	return value
 }
 
-// Outputs the value of a string.
-func outputValue(phrase string, primes *primeList) {
-	value := getValue(phrase)
+// Outputs a value along with its prime factors.
+func outputValue(value int, primes *primeList) {
 	primeFactors := []int{}
 	if value > 1 {
 		primes.setMax(sqrt(value))
@@ -110,6 +109,11 @@ func outputValue(phrase string, primes *primeList) {
 	fmt.Printf("%d %v\n", value, primeFactors)
 }
 
+// Outputs the value of phrase along with its prime factors.
+func processPhrase(phrase string, primes *primeList) {
+	outputValue(getValue(strings.ToLower(phrase)), primes)
+}
+
 func main() {
 	primes := newPrimeList()
 
@@ -130,14 +134,14 @@ func main() {
 			os.Exit(1)
 		}
 		if n == len(text) {
-			fmt.Fprintf(os.Stderr, "Warning: Can only read first %d bytes of file.", len(text))
+			fmt.Fprintf(os.Stderr, "Warning: Can only read first %d bytes of file.", n)
 		}
 		text = text[:n]
 		words := regexp.MustCompile(`[\w'\-]+`).FindAll(text, -1)
 		data := []valueEntry{}
 		seenWords := map[string]bool{}
 		for _, wordSlice := range words {
-			word := string(wordSlice)
+			word := strings.ToLower(string(wordSlice))
 			if !seenWords[word] {
 				seenWords[word] = true
 				value := getValue(word)
@@ -157,7 +161,7 @@ func main() {
 			}
 		}
 		for _, entry := range data {
-			fmt.Println(entry.value)
+			outputValue(entry.value, primes)
 			for _, word := range entry.words {
 				fmt.Println(word)
 			}
@@ -166,14 +170,14 @@ func main() {
 	} else if len(os.Args) > 1 {
 		// Convert the arguments to a single string. Use a " " seperator to ensure
 		// numbers don't run together.
-		outputValue(strings.Join(os.Args[1:], " "), primes)
+		processPhrase(strings.Join(os.Args[1:], " "), primes)
 	} else {
 		for {
 			phrase, err := readline.String("> ")
 			if err != nil {
 				break
 			}
-			outputValue(phrase, primes)
+			processPhrase(phrase, primes)
 			if phrase != "" {
 				readline.AddHistory(phrase)
 			}
