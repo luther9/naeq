@@ -14,6 +14,13 @@ import (
 	"github.com/bobappleyard/readline"
 )
 
+func fatal(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
+
 // Returns the square root of n.
 func sqrt(n int) int {
 	return int(math.Sqrt(float64(n)))
@@ -122,17 +129,11 @@ func main() {
 
 	if *fileName != "" {
 		file, err := os.Open(*fileName)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+		fatal(err)
 		// FIXME: Isn't there a better way to allocate memory for file reading?
 		text := make([]byte, 1000000000)
 		n, err := file.Read(text)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+		fatal(err)
 		if n == len(text) {
 			fmt.Fprintf(os.Stderr, "Warning: Can only read first %d bytes of file.", n)
 		}
