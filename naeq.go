@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
 	"regexp"
@@ -128,16 +129,8 @@ func main() {
 	flag.Parse()
 
 	if *fileName != "" {
-		file, err := os.Open(*fileName)
+		text, err := ioutil.ReadFile(*fileName)
 		fatal(err)
-		// FIXME: Isn't there a better way to allocate memory for file reading?
-		text := make([]byte, 1000000000)
-		n, err := file.Read(text)
-		fatal(err)
-		if n == len(text) {
-			fmt.Fprintf(os.Stderr, "Warning: Can only read first %d bytes of file.", n)
-		}
-		text = text[:n]
 		words := regexp.MustCompile(`[\w'\-]+`).FindAll(text, -1)
 		data := []valueEntry{}
 		seenWords := map[string]bool{}
