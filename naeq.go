@@ -15,13 +15,6 @@ import (
 	"github.com/bobappleyard/readline"
 )
 
-func fatal(err error) {
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-}
-
 // Returns the square root of n.
 func sqrt(n int) int {
 	return int(math.Sqrt(float64(n)))
@@ -130,7 +123,10 @@ func main() {
 
 	if *fileName != "" {
 		text, err := ioutil.ReadFile(*fileName)
-		fatal(err)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 		words := regexp.MustCompile(`[\w'\-]+`).FindAll(text, -1)
 		data := []valueEntry{}
 		seenWords := map[string]bool{}
